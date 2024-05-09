@@ -4,6 +4,15 @@ import requests
 # Setup the Gemini API client using the provided API key
 gemini_api_key = st.secrets["gemini_api_key"]
 
+# Function to make authenticated requests to the Gemini API
+def gemini_api_request(endpoint, params=None):
+    headers = {
+        "Content-Type": "application/json",
+        "X-GEMINI-APIKEY": gemini_api_key
+    }
+    response = requests.get(f"https://api.gemini.com/v1/{endpoint}", params=params, headers=headers)
+    return response.json()
+    
 # Function to get place recommendations based on the type of vacation place
 def get_place_recommendations(vacation_type):
     # Example: You might use a different place recommendation service or API here
