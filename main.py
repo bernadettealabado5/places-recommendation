@@ -1,66 +1,48 @@
 import streamlit as st
-import requests
+import os
+import from google.cloud importaiplatform
 
-# Setup the Gemini API client using the provided API key
-gemini_api_key = st.secrets["gemini_api_key"]
+# Setup the OpenAI client using an asynchronous client with the secret API key
+api_key = os.environ["GEMINI_API_KEY"]
 
-# Function to make authenticated requests to the Gemini API
-def gemini_api_request(endpoint, params=None):
-    headers = {
-        "Content-Type": "application/json",
-        "X-GEMINI-APIKEY": gemini_api_key
-    }
-    response = requests.get(f"https://api.gemini.com/v1/{endpoint}", params=params, headers=headers)
-    return response.json()
-    
-# Function to get place recommendations based on the type of vacation place
-def get_place_recommendations(vacation_type):
-    # Example: You might use a different place recommendation service or API here
-    # This is just a placeholder for demonstration purposes
-    response = requests.get(f"https://api.example.com/places?type={vacation_type}&api_key={gemini_api_key}")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
+async def generate_response(question, context):
+    model = "gpt-4-0125-preview"
+    completion = await client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "user", "content": question},
+            {"role": "system", "content": context}
+        ]
+    )
+    return completion.choices[0].message.content
 
-# Function to get details of a specific place
-def get_place_details(place_name):
-    # Example: You might use a different service or API here to get place details
-    # This is just a placeholder for demonstration purposes
-    response = requests.get(f"https://api.example.com/place/{place_name}?api_key={gemini_api_key}")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
-
-def app():
+async def app():
     st.title("Vacation Place Recommender")
 
     # Step 1: Get the type of vacation places the user is interested in
-    vacation_type = st.text_input("Enter the type of vacation place you want to visit (e.g., Beach, Historical, Mountain, City, etc.):")
-
-    if st.button("Generate Recommendations"):
-        if vacation_type:
-            recommendations = get_place_recommendations(vacation_type.lower())
-            if recommendations:
-                st.write("Here are some recommendations for you:")
-                for recommendation in recommendations[:20]:
-                    st.write(recommendation)
-                place_choice = st.text_input("Enter the name of the place you want more details about:")
-                if place_choice:
-                    details = get_place_details(place_choice)
-                    if details:
-                        st.write("Details for", place_choice)
-                        st.write("Entrance Fee:", details.get("entrance_fee", "Not available"))
-                        st.write("Precautions:", details.get("precautions", "Not available"))
-                        st.write("What to Bring:", details.get("what_to_bring", "Not available"))
-                        st.write("Description:", details.get("description", "Not available"))
-                    else:
-                        st.error("Failed to retrieve details for", place_choice)
-            else:
-                st.error("Failed to retrieve recommendations. Please try again later.")
-        else:
-            st.error("Please enter a valid vacation type.")
+    type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
+    
+    # Step 2: Provide examples and further info based on user interest
+    if type_of_vacation:
+        examples_context = "Provide examples of vacation places suitable for enjoying a " + type_of_vacation + " environment."
+        examples_question = f"Can you suggest some {type_of_vacation} vacation places?"
+        if st.button("Get Examples", key="examples"):
+            examples = await generate_response(examples_question, examples_context)
+            st.write("Here are some examples:")
+            st.write(examples)
+        
+        # Step 3: Gather more information about a specific place chosen by the user
+        place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
+        
+        if place_choice:
+            if st.button("Get Information", key="info"):
+                fee_context = f"Information about entrance fees and location details for {place_choice}."
+                fee_question = f"What is the entrance fee and in which country is {place_choice} located?"
+                
+                info = await generate_response(fee_question, fee_context)
+                st.write(f"Details for {place_choice}:")
+                st.write(info)
 
 if __name__ == "__main__":
-    app()
+    import asyncio
+    asyncio.run(app())
