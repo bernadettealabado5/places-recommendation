@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-import from google.cloud importaiplatform
+from google.cloud import aiplatform
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
 api_key = os.environ["GEMINI_API_KEY"]
