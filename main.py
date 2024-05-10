@@ -1,11 +1,9 @@
 import streamlit as st
-import os
-from google.cloud import aiplatform
-from some_library import GeminiClient
+import openai
+from openai import AsyncOpenAI
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
-api_key = os.environ["GEMINI_API_KEY"]
-client = GeminiClient(api_key=API_KEY)
+client = AsyncOpenAI(api_key=st.secrets["API_key"])
 
 async def generate_response(question, context):
     model = "gpt-4-0125-preview"
