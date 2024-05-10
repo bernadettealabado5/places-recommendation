@@ -30,15 +30,23 @@ async def app():
 
     # Step 1: Get the type of vacation places the user is interested in
     type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
-    
+
+    # Button to handle fetching more examples
+    more_examples_state = st.session_state.get('more_examples', 0)  # Tracks the number of times more examples were requested
+
     # Step 2: Provide examples and further info based on user interest
     if type_of_vacation:
-        examples_context = "Provide examples of vacation places suitable for enjoying a " + type_of_vacation + " environment."
-        examples_question = f"Can you suggest some specific names of {type_of_vacation} vacation places?"
-        if st.button("Get Examples", key="examples"):
+        examples_context = f"Provide {more_examples_state+1} set(s) of examples of vacation places suitable for enjoying a {type_of_vacation} environment."
+        examples_question = f"Can you suggest some specific names of {type_of_vacation} vacation places? More examples."
+        if st.button("Get Examples", key="examples") or more_examples_state:
             examples = await generate_response(examples_question, examples_context)
             st.write("Here are some examples:")
             st.write(examples)
+
+        # Button to get more examples
+        if st.button("More Examples"):
+            more_examples_state += 1
+            st.session_state['more_examples'] = more_examples_state  # Update session state
         
         # Step 3: Gather more information about a specific place chosen by the user
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
