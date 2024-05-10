@@ -19,6 +19,14 @@ async def generate_response(question, context):
 
 async def app():
     st.title("Vacation Place Recommender")
+    st.text("Group 1 Intelligent Systems Final Project\n"
+            "Bernadette E. Alabado\n"
+            "Samantha V. Bangcaya\n"
+            "Yllennor Anne V. Carbonell\n"
+            "Asie Jay E. Fondales\n"
+            "Almera J. Valladolid\n"
+            "BSCS 3-B AI\n"
+            "West Visayas State University")
 
     # Step 1: Get the type of vacation places the user is interested in
     type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
@@ -26,7 +34,7 @@ async def app():
     # Step 2: Provide examples and further info based on user interest
     if type_of_vacation:
         examples_context = "Provide examples of vacation places suitable for enjoying a " + type_of_vacation + " environment."
-        examples_question = f"Can you suggest some {type_of_vacation} vacation places?"
+        examples_question = f"Can you suggest some specific names of {type_of_vacation} vacation places?"
         if st.button("Get Examples", key="examples"):
             examples = await generate_response(examples_question, examples_context)
             st.write("Here are some examples:")
@@ -36,13 +44,13 @@ async def app():
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
         
         if place_choice:
-            if st.button("Get Information", key="info"):
-                details_context = f"Details about activities and photos for {place_choice}."
-                details_question = f"Can you provide details and activities available at {place_choice}?"
+            if st.button("Get Detailed Information", key="detailed_info"):
+                detailed_context = f"Comprehensive information about {place_choice}, including age restrictions, cultural norms, potential expenses like entrance fees, and activities available."
+                detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {place_choice}?"
                 
-                details = await generate_response(details_question, details_context)
+                detailed_info = await generate_response(detailed_question, detailed_context)
                 st.write(f"Details for {place_choice}:")
-                st.write(details)
+                st.write(detailed_info)
                 
                 # Optional: Display images from a URL
                 image_url = f"https://example.com/images/{place_choice.replace(' ', '_').lower()}.jpg"  # Placeholder URL
