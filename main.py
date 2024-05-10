@@ -1,6 +1,7 @@
 import streamlit as st
 import openai
 from openai import AsyncOpenAI
+import requests  # For fetching images from URLs
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
 client = AsyncOpenAI(api_key=st.secrets["API_key"])
@@ -36,12 +37,16 @@ async def app():
         
         if place_choice:
             if st.button("Get Information", key="info"):
-                fee_context = f"Information about entrance fees and location details for {place_choice}."
-                fee_question = f"What is the entrance fee and in which country is {place_choice} located?"
+                details_context = f"Details about activities and photos for {place_choice}."
+                details_question = f"Can you provide details and activities available at {place_choice}?"
                 
-                info = await generate_response(fee_question, fee_context)
+                details = await generate_response(details_question, details_context)
                 st.write(f"Details for {place_choice}:")
-                st.write(info)
+                st.write(details)
+                
+                # Optional: Display images from a URL
+                image_url = f"https://example.com/images/{place_choice.replace(' ', '_').lower()}.jpg"  # Placeholder URL
+                st.image(image_url, caption=f"Scenic view of {place_choice}")
 
 if __name__ == "__main__":
     import asyncio
