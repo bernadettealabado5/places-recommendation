@@ -13,7 +13,11 @@ async def generate_response(messages):
     )
     return completion.choices[0].message.content
 
-async def app():
+async def fetch_response(messages, session_key):
+    response = await generate_response(messages)
+    st.session_state[session_key] = response
+
+def main():
     st.title("RoamRanger")
     st.subheader("RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.")
     st.text("Bernadette E. Alabado\n"
@@ -37,14 +41,15 @@ async def app():
         examples_question = f"Can you suggest some specific names of {st.session_state.prompt[0]['content']} vacation places?"
         if 'examples' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": examples_question})
-            st.session_state.examples = asyncio.run(generate_response(st.session_state.prompt))
+            asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
 
-        st.write("Here are some examples:")
-        st.write(st.session_state.examples)
+        if 'examples' in st.session_state:
+            st.write("Here are some examples:")
+            st.write(st.session_state.examples)
 
-        if st.session_state.level == 2:
-            if st.button("Next", key="level2"):
-                st.session_state.level += 1
+            if st.session_state.level == 2:
+                if st.button("Next", key="level2"):
+                    st.session_state.level += 1
 
     if st.session_state.level >= 3:
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
@@ -57,17 +62,18 @@ async def app():
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}?"
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
-            st.session_state.detailed_info = asyncio.run(generate_response(st.session_state.prompt))
+            asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
 
-        st.write(f"Details for {st.session_state.prompt[2]['content']}:")
-        st.write(st.session_state.detailed_info)
+        if 'detailed_info' in st.session_state:
+            st.write(f"Details for {st.session_state.prompt[2]['content']}:")
+            st.write(st.session_state.detailed_info)
 
-        # Optional: Display images from a URL
-        image_url = f"https://example.com/images/{st.session_state.prompt[2]['content'].replace(' ', '_').lower()}.jpg"  # Placeholder URL
-        st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
+            # Optional: Display images from a URL
+            image_url = f"https://example.com/images/{st.session_state.prompt[2]['content'].replace(' ', '_').lower()}.jpg"  # Placeholder URL
+            st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
 
     if st.session_state.level > 4:
         st.write("Thank you for using RoamRanger!")
 
 if __name__ == "__main__":
-    asyncio.run(app())
+    main()
