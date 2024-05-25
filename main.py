@@ -45,8 +45,7 @@ def main():
                 examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
                 st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
-            asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
-            st.experimental_rerun()
+            asyncio.create_task(fetch_response(st.session_state.prompt, 'examples'))
 
         if 'examples' in st.session_state:
             st.write("Here are some examples:")
@@ -72,8 +71,7 @@ def main():
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
-            asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
-            st.experimental_rerun()
+            asyncio.create_task(fetch_response(st.session_state.prompt, 'detailed_info'))
 
         if 'detailed_info' in st.session_state:
             st.write(f"Details for {st.session_state.prompt[2]['content']}:")
