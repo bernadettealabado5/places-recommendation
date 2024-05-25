@@ -48,7 +48,7 @@ def main():
 
         # Display the examples fetched from the API
         if 'examples' in st.session_state:
-            st.write("Here are some examples:")
+            st.write("Here are the TOP 10 recommended places:")
             st.write(st.session_state.examples)
 
             # Provide a button to proceed to the next step
