@@ -39,8 +39,8 @@ def main():
 
     if st.session_state.level >= 2:
         examples_question = f"Can you suggest some specific names of {st.session_state.prompt[0]['content']} vacation places?"
-        if 'examples' not in st.session_state or st.session_state.more_examples:
-            if st.session_state.more_examples:
+        if 'examples' not in st.session_state or st.session_state.more_examples > 0:
+            if st.session_state.more_examples > 0:
                 examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
                 st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
@@ -49,21 +49,26 @@ def main():
         if 'examples' in st.session_state:
             st.write("Here are some examples:")
             st.write(st.session_state.examples)
-            if st.button("Get More Examples", key="more_examples"):
+            
+            more_examples = st.button("Get More Examples", key="more_examples")
+            if more_examples:
                 st.session_state.more_examples += 1
-                st.session_state.prompt.pop()  # Remove the last added question to avoid repetition
-                asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
+                st.experimental_rerun()
 
             if st.session_state.level == 2:
-                if st.button("Next", key="level2"):
+                next_level = st.button("Next", key="level2")
+                if next_level:
                     st.session_state.level += 1
+                    st.experimental_rerun()
 
     if st.session_state.level >= 3:
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
         if place_choice and st.session_state.level == 3:
             st.session_state.prompt.append({"role": "user", "content": place_choice})
-            if st.button("Submit", key="level3"):
+            submit_choice = st.button("Submit", key="level3")
+            if submit_choice:
                 st.session_state.level += 1
+                st.experimental_rerun()
 
     if st.session_state.level >= 4:
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
