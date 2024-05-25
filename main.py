@@ -1,17 +1,16 @@
 import streamlit as st
 import openai
-from openai import AsyncOpenAI
 import asyncio
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
-client = AsyncOpenAI(api_key=st.secrets["API_key"])
+openai.api_key = st.secrets["API_key"]
 
 async def generate_response(messages):
-    completion = await client.chat.completions.create(
+    response = await openai.ChatCompletion.acreate(
         model="gpt-4",
         messages=messages
     )
-    return completion.choices[0].message['content']
+    return response['choices'][0]['message']['content']
 
 async def fetch_response(messages, session_key):
     response = await generate_response(messages)
