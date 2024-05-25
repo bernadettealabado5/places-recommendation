@@ -28,19 +28,31 @@ def main():
     if 'level' not in st.session_state:
         st.session_state.level = 1
         st.session_state.prompt = []
+    if 'continent' not in st.session_state:
+        st.session_state.continent = ""
 
     # Removed the label for level prompt
     # st.write(f"Level {st.session_state.level} Prompt")
 
     if st.session_state.level == 1:
+        continent = st.selectbox("Choose the continent of the place:", ["", "Africa", "Asia", "Europe", "North America", "Oceania", "South America"])
+        if continent:
+            st.session_state.continent = continent
+            st.session_state.level += 1
+            st.experimental_rerun()
+
+    if st.session_state.level == 2:
         type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
         if st.button("Submit", key="level1"):
-            st.session_state.prompt.append({"role": "user", "content": type_of_vacation})
+            st.session_state.prompt.append({"role": "user", "content": f"{type_of_vacation} in {st.session_state.continent}"})
             st.session_state.level += 1
 
-    if st.session_state.level >= 2:
+    if st.session_state.level >= 3:
         examples_question = f"Can you suggest some specific names of {st.session_state.prompt[0]['content']} vacation places?"
-        if 'examples' not in st.session_state:
+        if 'examples' not in st.session_state or st.session_state.more_examples > 0:
+            if st.session_state.more_examples > 0:
+                examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
+                st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
             asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
 
@@ -48,18 +60,18 @@ def main():
             st.write("Here are some examples:")
             st.write(st.session_state.examples)
 
-            if st.session_state.level == 2:
+            if st.session_state.level == 3:
                 if st.button("Next", key="level2"):
                     st.session_state.level += 1
 
-    if st.session_state.level >= 3:
+    if st.session_state.level >= 4:
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
-        if place_choice and st.session_state.level == 3:
+        if place_choice and st.session_state.level == 4:
             st.session_state.prompt.append({"role": "user", "content": place_choice})
             if st.button("Submit", key="level3"):
                 st.session_state.level += 1
 
-    if st.session_state.level >= 4:
+    if st.session_state.level >= 5:
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
@@ -76,6 +88,7 @@ def main():
             if st.button("Start Over"):
                 st.session_state.level = 1
                 st.session_state.prompt = []
+                st.session_state.continent = ""
                 st.experimental_rerun()
 
             st.write("Thank you for using RoamRanger!")
