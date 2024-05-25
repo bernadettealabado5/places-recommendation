@@ -60,7 +60,7 @@ def main():
                 st.session_state.level += 1
 
     if st.session_state.level >= 4:
-        detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}?"
+        detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
             asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
@@ -73,12 +73,12 @@ def main():
             image_url = f"https://example.com/images/{st.session_state.prompt[2]['content'].replace(' ', '_').lower()}.jpg"  # Placeholder URL
             st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
 
-    if st.session_state.level > 4:
-        st.write("Thank you for using RoamRanger!")
-        if st.button("Start Over"):
-            st.session_state.level = 1
-            st.session_state.prompt = []
-            st.experimental_rerun()
+            if st.button("Start Over"):
+                st.session_state.level = 1
+                st.session_state.prompt = []
+                st.experimental_rerun()
+
+            st.write("Thank you for using RoamRanger!")
 
 if __name__ == "__main__":
     main()
