@@ -53,7 +53,7 @@ def main():
             asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
 
         if 'examples' in st.session_state:
-            st.write("Here are some examples:")
+            st.write("Here are the recommended places:")
             st.write(st.session_state.examples)
 
             if st.session_state.level == 3:
