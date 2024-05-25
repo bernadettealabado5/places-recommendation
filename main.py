@@ -3,7 +3,7 @@ import openai
 import asyncio
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
-client = AsyncOpenAI(api_key=st.secrets["API_key"])
+openai.api_key = st.secrets["API_key"]
 
 async def generate_response(messages):
     response = await openai.ChatCompletion.create(
