@@ -1,9 +1,8 @@
 import streamlit as st
 import openai
-from openai import AsyncOpenAI
 import asyncio
 
-# Setup the OpenAI client using an asynchronous client with the secret API key
+# Setup the OpenAI client using the secret API key
 openai.api_key = st.secrets["API_key"]
 
 async def generate_response(messages):
@@ -17,7 +16,7 @@ async def fetch_response(messages, session_key):
     response = await generate_response(messages)
     st.session_state[session_key] = response
 
-def main():
+async def main():
     st.title("RoamRanger")
     st.subheader("RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-4 API to generate personalized recommendations and detailed information about various vacation destinations.")
     st.text("Bernadette E. Alabado\n"
@@ -45,7 +44,7 @@ def main():
                 examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
                 st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
-            asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
+            await fetch_response(st.session_state.prompt, 'examples')
             st.experimental_rerun()
 
         if 'examples' in st.session_state:
@@ -66,7 +65,7 @@ def main():
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
-            asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
+            await fetch_response(st.session_state.prompt, 'detailed_info')
             st.experimental_rerun()
 
         if 'detailed_info' in st.session_state:
@@ -81,4 +80,4 @@ def main():
         st.write("Thank you for using RoamRanger!")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
