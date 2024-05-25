@@ -7,11 +7,11 @@ import asyncio
 client = AsyncOpenAI(api_key=st.secrets["API_key"])
 
 async def generate_response(messages):
-    completion = await client.chat.completions.create(
+    response = await client.chat.completions.create(
         model="gpt-4",
         messages=messages
     )
-    return completion.choices[0].message['content']
+    return response.choices[0].message['content']
 
 async def fetch_response(messages, session_key):
     response = await generate_response(messages)
