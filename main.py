@@ -17,10 +17,6 @@ async def fetch_response(messages, session_key):
     response = await generate_response(messages)
     st.session_state[session_key] = response
 
-async def run_fetch_response(messages, session_key):
-    await fetch_response(messages, session_key)
-    st.experimental_rerun()
-
 def main():
     st.title("RoamRanger")
     st.subheader("RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-4 API to generate personalized recommendations and detailed information about various vacation destinations.")
@@ -49,7 +45,8 @@ def main():
                 examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
                 st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
-            asyncio.run(run_fetch_response(st.session_state.prompt, 'examples'))
+            asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
+            st.experimental_rerun()
 
         if 'examples' in st.session_state:
             st.write("Here are some examples:")
@@ -75,7 +72,8 @@ def main():
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
-            asyncio.run(run_fetch_response(st.session_state.prompt, 'detailed_info'))
+            asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
+            st.experimental_rerun()
 
         if 'detailed_info' in st.session_state:
             st.write(f"Details for {st.session_state.prompt[2]['content']}:")
