@@ -24,11 +24,12 @@ def main():
             "BSCS 3-B AI\n"
             "West Visayas State University")
 
-    # Multi-Level Prompting
+    # Initialize session state variables if they don't exist
     if 'level' not in st.session_state:
         st.session_state.level = 1
         st.session_state.prompt = []
-        st.session_state.more_examples = 0  # Initialize more examples count
+    if 'more_examples' not in st.session_state:
+        st.session_state.more_examples = 0
 
     if st.session_state.level == 1:
         type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
@@ -49,6 +50,7 @@ def main():
             st.write(st.session_state.examples)
             if st.button("Get More Examples", key="more_examples"):
                 st.session_state.more_examples += 1
+                st.session_state.prompt.pop()  # Remove the last added question to avoid repetition
                 asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
 
             if st.session_state.level == 2:
