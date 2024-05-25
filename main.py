@@ -1,17 +1,16 @@
 import streamlit as st
 import openai
-from openai import AsyncOpenAI
 import asyncio
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
-client = AsyncOpenAI(api_key=st.secrets["API_key"])
+openai.api_key = st.secrets["API_key"]
 
 async def generate_response(messages):
-    completion = await client.chat.completions.create(
+    response = await openai.ChatCompletion.acreate(
         model="gpt-4",
         messages=messages
     )
-    return completion.choices[0].message.content
+    return response['choices'][0]['message']['content']
 
 async def fetch_response(messages, session_key):
     response = await generate_response(messages)
@@ -36,6 +35,7 @@ def main():
         if st.button("Submit", key="level1"):
             st.session_state.prompt.append({"role": "user", "content": type_of_vacation})
             st.session_state.level += 1
+            st.experimental_rerun()
 
     if st.session_state.level >= 2:
         examples_question = f"Can you suggest some specific names of {st.session_state.prompt[0]['content']} vacation places?"
@@ -45,19 +45,17 @@ def main():
                 st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
             asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
+            st.experimental_rerun()
 
         if 'examples' in st.session_state:
             st.write("Here are some examples:")
             st.write(st.session_state.examples)
-            
-            more_examples = st.button("Get More Examples", key="more_examples")
-            if more_examples:
+            if st.button("Get More Examples", key="more_examples"):
                 st.session_state.more_examples += 1
                 st.experimental_rerun()
 
             if st.session_state.level == 2:
-                next_level = st.button("Next", key="level2")
-                if next_level:
+                if st.button("Next", key="level2"):
                     st.session_state.level += 1
                     st.experimental_rerun()
 
@@ -65,8 +63,7 @@ def main():
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
         if place_choice and st.session_state.level == 3:
             st.session_state.prompt.append({"role": "user", "content": place_choice})
-            submit_choice = st.button("Submit", key="level3")
-            if submit_choice:
+            if st.button("Submit", key="level3"):
                 st.session_state.level += 1
                 st.experimental_rerun()
 
@@ -75,6 +72,7 @@ def main():
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
             asyncio.run(fetch_response(st.session_state.prompt, 'detailed_info'))
+            st.experimental_rerun()
 
         if 'detailed_info' in st.session_state:
             st.write(f"Details for {st.session_state.prompt[2]['content']}:")
