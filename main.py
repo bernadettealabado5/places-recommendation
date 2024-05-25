@@ -33,34 +33,38 @@ async def app():
             st.session_state.prompt.append({"role": "user", "content": type_of_vacation})
             st.session_state.level += 1
 
-    elif st.session_state.level == 2:
+    if st.session_state.level >= 2:
         examples_question = f"Can you suggest some specific names of {st.session_state.prompt[0]['content']} vacation places?"
-        st.session_state.prompt.append({"role": "user", "content": examples_question})
+        if 'examples' not in st.session_state:
+            st.session_state.prompt.append({"role": "user", "content": examples_question})
+            st.session_state.examples = asyncio.run(generate_response(st.session_state.prompt))
 
-        if st.button("Get Examples", key="examples"):
-            examples = await generate_response(st.session_state.prompt)
-            st.write("Here are some examples:")
-            st.write(examples)
-            st.session_state.level += 1
+        st.write("Here are some examples:")
+        st.write(st.session_state.examples)
 
-    elif st.session_state.level == 3:
+        if st.session_state.level == 2:
+            if st.button("Next", key="level2"):
+                st.session_state.level += 1
+
+    if st.session_state.level >= 3:
         place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
-        if st.button("Submit", key="level3"):
+        if place_choice and st.session_state.level == 3:
             st.session_state.prompt.append({"role": "user", "content": place_choice})
-            st.session_state.level += 1
+            if st.button("Submit", key="level3"):
+                st.session_state.level += 1
 
-    elif st.session_state.level == 4:
+    if st.session_state.level >= 4:
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}?"
-        st.session_state.prompt.append({"role": "user", "content": detailed_question})
+        if 'detailed_info' not in st.session_state:
+            st.session_state.prompt.append({"role": "user", "content": detailed_question})
+            st.session_state.detailed_info = asyncio.run(generate_response(st.session_state.prompt))
 
-        if st.button("Get Detailed Information", key="detailed_info"):
-            detailed_info = await generate_response(st.session_state.prompt)
-            st.write(f"Details for {st.session_state.prompt[2]['content']}:")
-            st.write(detailed_info)
+        st.write(f"Details for {st.session_state.prompt[2]['content']}:")
+        st.write(st.session_state.detailed_info)
 
-            # Optional: Display images from a URL
-            image_url = f"https://example.com/images/{st.session_state.prompt[2]['content'].replace(' ', '_').lower()}.jpg"  # Placeholder URL
-            st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
+        # Optional: Display images from a URL
+        image_url = f"https://example.com/images/{st.session_state.prompt[2]['content'].replace(' ', '_').lower()}.jpg"  # Placeholder URL
+        st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
 
     if st.session_state.level > 4:
         st.write("Thank you for using RoamRanger!")
