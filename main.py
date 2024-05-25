@@ -2,19 +2,19 @@ import streamlit as st
 import openai
 import asyncio
 
-# Setup the OpenAI client using an asynchronous client with the secret API key
+# Setup the OpenAI client with the secret API key
 openai.api_key = st.secrets["API_key"]
 
 async def generate_response(messages):
-    response = await openai.ChatCompletion.create(
-        model="gpt-4-0125-preview",
+    response = await openai.ChatCompletion.acreate(
+        model="gpt-4",  # Correct model name
         messages=messages
     )
     return response['choices'][0]['message']['content']
 
 def main():
-    st.title("Roam Ranger")
-    st.subheader("Roam Ranger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.")
+    st.title("RoamRanger")
+    st.subheader("RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.")
     st.text("Bernadette E. Alabado\n"
             "BSCS 3-B AI\n"
             "West Visayas State University")
@@ -62,7 +62,7 @@ def main():
             st.image(image_url, caption=f"Scenic view of {st.session_state.prompt[2]['content']}")
 
     if st.session_state.level > 4:
-        st.write("Thank you for using the Creative Text Generator!")
+        st.write("Thank you for using RoamRanger!")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
