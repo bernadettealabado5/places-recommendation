@@ -1,16 +1,17 @@
 import streamlit as st
 import openai
+from openai import AsyncOpenAI
 import asyncio
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
-openai.api_key = st.secrets["API_key"]
+client = AsyncOpenAI(api_key=st.secrets["API_key"])
 
 async def generate_response(messages):
-    response = await openai.ChatCompletion.acreate(
+    completion = await client.chat.completions.create(
         model="gpt-4",
         messages=messages
     )
-    return response['choices'][0]['message']['content']
+    return completion.choices[0].message['content']
 
 async def fetch_response(messages, session_key):
     response = await generate_response(messages)
@@ -54,20 +55,13 @@ def main():
                 st.session_state.more_examples += 1
                 st.experimental_rerun()
 
-            if st.session_state.level == 2:
-                if st.button("Next", key="level2"):
-                    st.session_state.level += 1
-                    st.experimental_rerun()
-
-    if st.session_state.level >= 3:
-        place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
-        if place_choice and st.session_state.level == 3:
-            st.session_state.prompt.append({"role": "user", "content": place_choice})
-            if st.button("Submit", key="level3"):
-                st.session_state.level += 1
+            place_choice = st.text_input("Enter the name of the vacation place you are interested in from the examples above:")
+            if place_choice and st.button("Submit", key="level3"):
+                st.session_state.prompt.append({"role": "user", "content": place_choice})
+                st.session_state.level = 4
                 st.experimental_rerun()
 
-    if st.session_state.level >= 4:
+    if st.session_state.level == 4:
         detailed_question = f"What are the age restrictions, cultural norms, entrance fees, and activities available at {st.session_state.prompt[2]['content']}? Also, provide some travel tips for visitors."
         if 'detailed_info' not in st.session_state:
             st.session_state.prompt.append({"role": "user", "content": detailed_question})
