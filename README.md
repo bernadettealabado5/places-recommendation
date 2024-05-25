@@ -1,7 +1,7 @@
 # RoamRanger
 
-Bernadette E. Alabado
-BSCS 3-B AI
+Bernadette E. Alabado\n
+BSCS 3-B AI\n
 West Visayas Satte University
 
 RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.
