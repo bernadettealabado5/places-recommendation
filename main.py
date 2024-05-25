@@ -29,9 +29,6 @@ def main():
         st.session_state.level = 1
         st.session_state.prompt = []
 
-    # Removed the label for level prompt
-    # st.write(f"Level {st.session_state.level} Prompt")
-
     if st.session_state.level == 1:
         type_of_vacation = st.text_input("What type of vacation place are you looking for? (e.g., beach, mountain, city, etc.)")
         if st.button("Submit", key="level1"):
