@@ -1,18 +1,19 @@
 import streamlit as st
 import openai
+from openai import AsyncOpenAI
 import asyncio
 
-# Setup the OpenAI client with the secret API key
-openai.api_key = st.secrets["API_key"]
+# Setup the OpenAI client using an asynchronous client with the secret API key
+client = AsyncOpenAI(api_key=st.secrets["API_key"])
 
 async def generate_response(messages):
-    response = await openai.ChatCompletion.acreate(
-        model="gpt-4",  # Correct model name
+    completion = await client.chat.completions.create(
+        model="gpt-4",
         messages=messages
     )
-    return response['choices'][0]['message']['content']
+    return completion.choices[0].message.content
 
-def main():
+async def app():
     st.title("RoamRanger")
     st.subheader("RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.")
     st.text("Bernadette E. Alabado\n"
@@ -37,7 +38,7 @@ def main():
         st.session_state.prompt.append({"role": "user", "content": examples_question})
 
         if st.button("Get Examples", key="examples"):
-            examples = asyncio.run(generate_response(st.session_state.prompt))
+            examples = await generate_response(st.session_state.prompt)
             st.write("Here are some examples:")
             st.write(examples)
             st.session_state.level += 1
@@ -53,7 +54,7 @@ def main():
         st.session_state.prompt.append({"role": "user", "content": detailed_question})
 
         if st.button("Get Detailed Information", key="detailed_info"):
-            detailed_info = asyncio.run(generate_response(st.session_state.prompt))
+            detailed_info = await generate_response(st.session_state.prompt)
             st.write(f"Details for {st.session_state.prompt[2]['content']}:")
             st.write(detailed_info)
 
@@ -65,4 +66,4 @@ def main():
         st.write("Thank you for using RoamRanger!")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(app())
