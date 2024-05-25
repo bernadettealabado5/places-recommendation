@@ -4,11 +4,11 @@ Bernadette E. Alabado
 BSCS 3-B AI
 West Visayas Satte University
 
-RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-4 API to generate personalized recommendations and detailed information about various vacation destinations.
+RoamRanger is a user-friendly web application designed to help users discover ideal vacation spots based on their preferences. By guiding users through a multi-level prompting process, RoamRanger leverages the power of OpenAI's GPT-3 API to generate personalized recommendations and detailed information about various vacation destinations.
 
 ## Introduction
 
-RoamRanger helps users discover ideal vacation spots based on their preferences. Through a series of guided prompts, users can narrow down their vacation preferences, receive personalized recommendations, and get detailed information about various destinations. The application uses OpenAI's GPT-4 API to provide these recommendations and details.
+RoamRanger helps users discover ideal vacation spots based on their preferences. Through a series of guided prompts, users can narrow down their vacation preferences, receive personalized recommendations, and get detailed information about various destinations. The application uses OpenAI's GPT-3 API to provide these recommendations and details.
 
 ## Project Setup
 
