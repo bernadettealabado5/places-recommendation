@@ -42,6 +42,7 @@ def main():
         if 'examples' not in st.session_state or st.session_state.more_examples:
             if st.session_state.more_examples:
                 examples_question = f"Can you suggest more specific names of {st.session_state.prompt[0]['content']} vacation places?"
+                st.session_state.more_examples = 0
             st.session_state.prompt.append({"role": "user", "content": examples_question})
             asyncio.run(fetch_response(st.session_state.prompt, 'examples'))
 
