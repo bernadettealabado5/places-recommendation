@@ -1,6 +1,5 @@
 import streamlit as st
 import openai
-from openai import AsyncOpenAI
 import asyncio
 
 # Setup the OpenAI client using an asynchronous client with the secret API key
